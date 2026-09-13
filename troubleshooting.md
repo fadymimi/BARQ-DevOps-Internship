@@ -93,8 +93,8 @@ Keep chronological entries. Copy this block for each meaningful investigation.
 - Actual output: Static config review — `volumes: postgres-data:/var/lib/postgresql/backup` and `tmpfs: [/var/lib/postgresql/data]`.
 - Failed attempt and what changed your thinking: N/A — found via config read; will be confirmed live with an actual persistence test in Part 3.
 - Root cause: The named volume is mounted to the wrong path, and a tmpfs mount shadows the real data directory, so all PostgreSQL data lives only in memory and is lost on container removal.
-- Fix: Pending — will remove the tmpfs mount and point the named volume at `/var/lib/postgresql/data` in Part 2/3.
-- Retest evidence: Pending — will be proven via backup.sh/restore.sh and container recreation test in Part 3.
+- Fix: Removed the `tmpfs: [/var/lib/postgresql/data]` line and changed the named volume mount from `/var/lib/postgresql/backup` to `/var/lib/postgresql/data` in docker-compose.yml (commit: mount named volume at postgres data path).
+- Retest evidence: Created a record titled PERSISTENCE_TEST_RECORD (id 3) via POST /records, ran `docker compose down` (without --volumes) then `docker compose up --build -d`, and confirmed via GET /records that id 3 / PERSISTENCE_TEST_RECORD was still present after full container recreation.
 - Related commit: (to be added in Part 2/3)
 - Remaining uncertainty: None on the misconfiguration; persistence will be proven empirically once fixed.
 
